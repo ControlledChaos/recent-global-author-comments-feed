@@ -1,7 +1,11 @@
-=== Recent Global Author Comments Feed ===
-Authors: Ivan Shaovchev, Andrew Billits (Incsub)
+=== Global Comments Feed ===
+Authors: Ivan Shaovchev, Andrew Billits (Incsub), S H Mohanjith (Incsub)
 
 == Changelog ==
+
+= 1.0.3 =
+* Name Change
+* Author id fix
 
 = 1.0.2 =
 * Compatibility update for WordPress 3.1

@@ -3,7 +3,7 @@
 Plugin Name: Global Author Comments Feed
 Plugin URI: http://premium.wpmudev.org/project/recent-global-author-comments-feed
 Description: Provides a global feed of comments from a single author made across multiple blogs on the one Multisite network.
-Author: Ivan Shaovchev & Andrew Billits (Incsub)
+Author: Ivan Shaovchev, Andrew Billits (Incsub), S H Mohanjith (Incsub)
 Author URI: http://ivan.sh
 Version: 1.0.2
 Network: true
@@ -34,7 +34,7 @@ function recent_global_author_comments_feed() {
     global $wpdb, $current_site;
 
     $number = ( empty( $_GET['number'] ) ) ? '25' : $_GET['number'];
-    $author = ( empty( $_GET['author'] ) ) ? '0'  : $_GET['author'];
+    $author = ( empty( $_GET['uid'] ) ) ? '0'  : $_GET['uid'];
 
     $query = "SELECT * FROM " . $wpdb->base_prefix . "site_comments WHERE site_id = '" . $current_site->id . "' AND comment_author_user_id = '" . $author . "' AND blog_public = '1' AND comment_approved = '1' AND comment_type != 'pingback' ORDER BY comment_date_stamp DESC LIMIT " . $number;
     $comments = $wpdb->get_results( $query, ARRAY_A );
@@ -114,7 +114,7 @@ add_action( 'do_feed_recent-global-author-comments', 'recent_global_author_comme
 function recent_global_author_comments_feed_rewrite( $wp_rewrite ) {
     $feed_rules = array(
         'feed/(.+)' => 'index.php?feed=' . $wp_rewrite->preg_index(1),
-        '(.+).xml'  => 'index.php?feed='. $wp_rewrite->preg_index(1)
+        '(.+).xml'  => 'index.php?feed='. $wp_rewrite->preg_index(1),
     );
     $wp_rewrite->rules = $feed_rules + $wp_rewrite->rules;
 }
