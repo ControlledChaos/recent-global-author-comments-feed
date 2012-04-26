@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: Recent Global Author Comments Feed
+Plugin Name: Global Author Comments Feed
 Plugin URI: http://premium.wpmudev.org/project/recent-global-author-comments-feed
 Description: Provides a global feed of comments from a single author made across multiple blogs on the one Multisite network.
 Author: Ivan Shaovchev & Andrew Billits (Incsub)
