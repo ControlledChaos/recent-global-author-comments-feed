@@ -3,6 +3,10 @@ Authors: Ivan Shaovchev, Andrew Billits (Incsub), S H Mohanjith (Incsub)
 
 == Changelog ==
 
+= 1.0.3.1 =
+* Fix: 404 header
+* Fix: RSS language
+
 = 1.0.3 =
 * Name Change
 * Author id fix

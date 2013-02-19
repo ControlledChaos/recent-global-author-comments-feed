@@ -5,7 +5,7 @@ Plugin URI: http://premium.wpmudev.org/project/recent-global-author-comments-fee
 Description: Provides a global feed of comments from a single author made across multiple blogs on the one Multisite network.
 Author: Ivan Shaovchev, Andrew Billits (Incsub), S H Mohanjith (Incsub)
 Author URI: http://premium.wpmudev.org/
-Version: 1.0.3
+Version: 1.0.3.1
 Network: true
 WDP ID: 88
 */ 
@@ -48,7 +48,8 @@ function recent_global_author_comments_feed() {
     if ( $author > 0 ) {
         $author_user_login = $wpdb->get_var("SELECT user_login FROM " . $wpdb->base_prefix . "users WHERE ID = '" . $author . "'");
     }
-
+    
+    header( 'HTTP/1.0 200 OK' );
     header( 'Content-Type: ' . feed_content_type('rss-http') . '; charset=' . get_option('blog_charset'), true );
     $more = 1;
 
@@ -71,7 +72,7 @@ function recent_global_author_comments_feed() {
         <description><?php bloginfo_rss("description") ?></description>
         <pubDate><?php echo mysql2date('D, d M Y H:i:s +0000', $last_published_post_date_time, false); ?></pubDate>
         <?php the_generator( 'rss2' ); ?>
-        <language><?php echo get_option('rss_language'); ?></language>
+        <language><?php bloginfo_rss( 'language' ); ?></language>
         <?php
         if ( count( $comments ) > 0 ) {
             foreach ($comments as $comment) {
