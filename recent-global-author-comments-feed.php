@@ -5,7 +5,7 @@ Plugin URI: http://premium.wpmudev.org/project/recent-global-author-comments-fee
 Description: Provides a global feed of comments from a single author made across multiple blogs on the one Multisite network.
 Author: Ivan Shaovchev, Andrew Billits (Incsub), S H Mohanjith (Incsub)
 Author URI: http://premium.wpmudev.org/
-Version: 1.0.3.1
+Version: 1.0.3.2
 Network: true
 WDP ID: 88
 */ 
@@ -27,26 +27,29 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+// Support for WPMU DEV Dashboard plugin
+include_once( dirname(__FILE__) . '/lib/dash-notices/wpmudev-dash-notification.php');
+
 /**
  * Create author comments feed
  */
 function recent_global_author_comments_feed() {
     global $wpdb, $current_site;
 
-    $number = ( empty( $_GET['number'] ) ) ? '25' : $_GET['number'];
-    $author = ( empty( $_GET['uid'] ) ) ? '0'  : $_GET['uid'];
+    $number = ( empty( $_GET['number'] ) ) ? '25' : intval($_GET['number']);
+    $author = ( empty( $_GET['uid'] ) ) ? '0'  : intval($_GET['uid']);
 
-    $query = "SELECT * FROM " . $wpdb->base_prefix . "site_comments WHERE site_id = '" . $current_site->id . "' AND comment_author_user_id = '" . $author . "' AND blog_public = '1' AND comment_approved = '1' AND comment_type != 'pingback' ORDER BY comment_date_stamp DESC LIMIT " . $number;
+    $query = $wpdb->prepare("SELECT * FROM " . $wpdb->base_prefix . "site_comments WHERE site_id = '" . $current_site->id . "' AND comment_author_user_id = %d AND blog_public = '1' AND comment_approved = '1' AND comment_type != 'pingback' ORDER BY comment_date_stamp DESC LIMIT %d", $author, $number);
     $comments = $wpdb->get_results( $query, ARRAY_A );
 
     if ( count( $comments ) > 0 ) {
-        $last_published_post_date_time = $wpdb->get_var("SELECT comment_date_gmt FROM " . $wpdb->base_prefix . "site_comments WHERE site_id = '" . $current_site->id . "' AND comment_author_user_id = '" . $author . "' AND blog_public = '1' AND comment_approved = '1' AND comment_type != 'pingback' ORDER BY comment_date_stamp DESC LIMIT 1");
+        $last_published_post_date_time = $wpdb->get_var($wpdb->prepare("SELECT comment_date_gmt FROM " . $wpdb->base_prefix . "site_comments WHERE site_id = %d AND comment_author_user_id = %d AND blog_public = '1' AND comment_approved = '1' AND comment_type != 'pingback' ORDER BY comment_date_stamp DESC LIMIT 1", $current_site->id, $author));
     } else {
         $last_published_post_date_time = time();
     }
 
     if ( $author > 0 ) {
-        $author_user_login = $wpdb->get_var("SELECT user_login FROM " . $wpdb->base_prefix . "users WHERE ID = '" . $author . "'");
+        $author_user_login = $wpdb->get_var($wpdb->prepare("SELECT user_login FROM " . $wpdb->base_prefix . "users WHERE ID = %d", $author));
     }
     
     header( 'HTTP/1.0 200 OK' );
@@ -76,9 +79,9 @@ function recent_global_author_comments_feed() {
         <?php
         if ( count( $comments ) > 0 ) {
             foreach ($comments as $comment) {
-                $post_title = $wpdb->get_var("SELECT post_title FROM " . $wpdb->base_prefix . $comment['blog_id'] . "_posts WHERE ID = '" . $comment['comment_post_id'] . "'");
+                $post_title = $wpdb->get_var($wpdb->prepare("SELECT post_title FROM " . $wpdb->base_prefix . $comment['blog_id'] . "_posts WHERE ID = %d", $comment['comment_post_id']));
                 if ( !empty( $comment['comment_author_user_id'] ) && $comment['comment_author_user_id'] > 0 ) {
-                    $author_display_name = $wpdb->get_var("SELECT display_name FROM " . $wpdb->base_prefix . "users WHERE ID = '" . $comment['comment_author_user_id'] . "'");
+                    $author_display_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM " . $wpdb->base_prefix . "users WHERE ID = %d", $comment['comment_author_user_id']));
                 }
                 if ( !empty( $author_user_login ) ) {
                     $comment_author = $author_display_name;
@@ -120,14 +123,3 @@ function recent_global_author_comments_feed_rewrite( $wp_rewrite ) {
     $wp_rewrite->rules = $feed_rules + $wp_rewrite->rules;
 }
 add_filter( 'generate_rewrite_rules', 'recent_global_author_comments_feed_rewrite' );
-
-
-/* Update Notifications Notice */
-if ( !function_exists( 'wdp_un_check' ) ):
-function wdp_un_check() {
-    if ( !class_exists('WPMUDEV_Update_Notifications') && current_user_can('edit_users') )
-        echo '<div class="error fade"><p>' . __('Please install the latest version of <a href="http://premium.wpmudev.org/project/update-notifications/" title="Download Now &raquo;">our free Update Notifications plugin</a> which helps you stay up-to-date with the most stable, secure versions of WPMU DEV themes and plugins. <a href="http://premium.wpmudev.org/wpmu-dev/update-notifications-plugin-information/">More information &raquo;</a>', 'wpmudev') . '</a></p></div>';
-}
-add_action( 'admin_notices', 'wdp_un_check', 5 );
-add_action( 'network_admin_notices', 'wdp_un_check', 5 );
-endif;
