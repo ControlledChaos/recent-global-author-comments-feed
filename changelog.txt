@@ -4,8 +4,8 @@ Authors: Ivan Shaovchev, Andrew Billits (Incsub), S H Mohanjith (Incsub)
 == Changelog ==
 
 = 1.0.3.2 =
-* Security patch
-* Update WPMU DEV Update Notification
+- IMPORTANT security update
+- XSS prevention patches
 
 = 1.0.3.1 =
 * Fix: 404 header
