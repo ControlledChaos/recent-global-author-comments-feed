@@ -1,7 +1,10 @@
 === Global Comments Feed ===
-Authors: Ivan Shaovchev, Andrew Billits (Incsub), S H Mohanjith (Incsub)
+Authors: Paul Menard (Incsub), Ivan Shaovchev, Andrew Billits (Incsub), S H Mohanjith (Incsub)
 
 == Changelog ==
+
+= 1.0.3.3 =
+- Update to query logic when trying to determine related post title for comment. Previous logic was incorrectly trying to access wp_1_posts table. 
 
 = 1.0.3.2 =
 - IMPORTANT security update

@@ -5,7 +5,7 @@ Plugin URI: http://premium.wpmudev.org/project/recent-global-author-comments-fee
 Description: Provides a global feed of comments from a single author made across multiple blogs on the one Multisite network.
 Author: WPMU DEV
 Author URI: http://premium.wpmudev.org/
-Version: 1.0.3.2
+Version: 1.0.3.3
 Network: true
 WDP ID: 88
 */ 
@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 // Support for WPMU DEV Dashboard plugin
-include_once( dirname(__FILE__) . '/lib/dash-notices/wpmudev-dash-notification.php');
+//include_once( dirname(__FILE__) . '/lib/dash-notices/wpmudev-dash-notification.php');
 
 /**
  * Create author comments feed
@@ -79,7 +79,14 @@ function recent_global_author_comments_feed() {
         <?php
         if ( count( $comments ) > 0 ) {
             foreach ($comments as $comment) {
-                $post_title = $wpdb->get_var($wpdb->prepare("SELECT post_title FROM " . $wpdb->base_prefix . $comment['blog_id'] . "_posts WHERE ID = %d", $comment['comment_post_id']));
+				if (intval($comment['blog_id']) < 2) 
+					$table_name = $wpdb->base_prefix . "posts";
+				else
+					$table_name = $wpdb->base_prefix . $comment['blog_id'] . "_posts";
+						
+				$sql_str = $wpdb->prepare("SELECT post_title FROM " . $table_name ." WHERE ID = %d", $comment['comment_post_id']);
+				
+                $post_title = $wpdb->get_var( $sql_str );
                 if ( !empty( $comment['comment_author_user_id'] ) && $comment['comment_author_user_id'] > 0 ) {
                     $author_display_name = $wpdb->get_var($wpdb->prepare("SELECT display_name FROM " . $wpdb->base_prefix . "users WHERE ID = %d", $comment['comment_author_user_id']));
                 }
